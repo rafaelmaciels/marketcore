@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
+class AuditLog extends Model
+{
+    use HasFactory;
+
+    public const UPDATED_AT = null;
+
+    protected $fillable = [
+        'user_id',
+        'branch_id',
+        'action',
+        'auditable_type',
+        'auditable_id',
+        'description',
+        'old_values',
+        'new_values',
+        'ip_address',
+        'user_agent',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'old_values' => 'array',
+        'new_values' => 'array',
+        'created_at' => 'datetime',
+    ];
+
+    /**
+     * Usuário que efetuou a ação.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Filial no momento da ação.
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
+     * Entidade auditada polimórfica.
+     */
+    public function auditable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+}
